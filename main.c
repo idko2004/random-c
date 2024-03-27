@@ -1,0 +1,94 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sodium.h>
+#include "str_vec.h"
+
+void print_help()
+{
+	printf("Usage:\n\trandom [PARTICIPANTS]\n\trandom [OPTION]\n\nOptions:\n\t-h, --help\t\tPrint this screen\n");
+}
+
+int list_mode(int argc, char *argv[])
+{
+	str_vec participants = new_str_vec();
+
+	for(int i = 1; i < argc; i++) //Buscar en los argumentos del comando...
+	{
+		vec_push_back(&participants, argv[i]);
+	}
+
+	if(participants.len < 2)
+	{
+		if(participants.len == 0) print_help();
+		else fprintf(stderr, "Not enough participants\n");
+		
+		return 1;
+	}
+
+	//printf("participants.len = %i\n", participants.len);
+	/*
+	for(int i = 0; i < participants.len; i++)
+	{
+		printf("%s\n", vec_get_back(&participants, i));
+	}
+	*/
+	int r = randombytes_random(); //Obtener el número random.
+	//printf("r = %i\n", r);
+
+	r = r % participants.len; //Sacar el resto de r con el número de participantes, así siempre está in-bounds.
+	if(r < 0) r *= -1; //Si el número es negativo, hacerlo positivo.
+	
+	//printf("r mod participants.len = %i\n", r);
+
+	char *winner = vec_get_back(&participants, r);
+
+	printf("%s\n", winner);
+
+	return 0;
+}
+
+int dice_mode(int argc, char *argv[])
+{
+	return 1;
+}
+
+int main(int argc, char *argv[])
+{
+	if(sodium_init() == -1)
+	{
+		fprintf(stderr, "Failed to load sodium libary\n");
+		return 1;
+	}
+
+	if(argc < 2)
+	{
+		if(argc == 1) print_help();
+		else fprintf(stderr, "Not enough participants\n");
+
+		return 1;
+	}
+
+	char *command = argv[1];
+
+	if(command == NULL) //En principio debería ser false siempre, pero por si acaso.
+	{
+		fprintf(stderr, "Not enough participants\n");
+		return 1;
+	}
+
+	if(strcmp(command, "-h") == 0 || strcmp(command, "--help") == 0)
+	{
+		print_help();
+		return 0;
+	}
+	else if(strcmp(command, "-d") == 0|| strcmp(command, "--dice") == 0)
+	{
+		return dice_mode(argc, argv);
+	}
+	else
+	{
+		return list_mode(argc, argv);
+	}
+}
+
