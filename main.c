@@ -6,14 +6,14 @@
 
 void print_help()
 {
-	printf("Usage:\n\trandom [PARTICIPANTS]\n\trandom [OPTION]\n\nOptions:\n\t-h, --help\t\tPrint this screen\n");
+	printf("Usage:\n\trandom [PARTICIPANTS]\n\trandom [OPTION]\n\nOptions:\n\t-h, --help\tPrint this screen.\n\t-d, --dice N\tGenerate a random number between 1 and N, by default N is 6.\n");
 }
 
 int list_mode(int argc, char *argv[])
 {
 	str_vec participants = new_str_vec();
 
-	for(int i = 1; i < argc; i++) //Buscar en los argumentos del comando...
+	for(int i = 1; i < argc; i++) //Usar los argumentos como participantes
 	{
 		vec_push_back(&participants, argv[i]);
 	}
@@ -50,7 +50,28 @@ int list_mode(int argc, char *argv[])
 
 int dice_mode(int argc, char *argv[])
 {
-	return 1;
+	long int max = 6;
+
+	if(argc > 2)
+	{
+		char *n = malloc(strlen(argv[2]) + 1); //Alojar memoria para copiar el string de argv[2]
+		strcpy(n, argv[2]);
+		char *endptr; //Al parecer hay que declarar un char justo después para que sepa donde parar
+
+		max = strtol(n, &endptr, 10); //Convertir string a long int
+	}
+
+	if(max < 2)
+	{
+		fprintf(stderr, "Maybe that isn't a valid number.\n");
+		return 1;
+	}
+
+	int r = (randombytes_random() % max) + 1;
+
+	printf("%ld\n", r);
+
+	return 0;
 }
 
 int main(int argc, char *argv[])
