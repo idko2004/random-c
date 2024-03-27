@@ -61,13 +61,14 @@ int dice_mode(int argc, char *argv[])
 		max = strtol(n, &endptr, 10); //Convertir string a long int
 	}
 
-	if(max < 2)
+	if(max < 2) //Comprobar si el número es válido, no es negativo, ni es 1, strtol devuelve 0 si el número no es válido así que también eso.
 	{
 		fprintf(stderr, "Maybe that isn't a valid number.\n");
 		return 1;
 	}
 
 	int r = (randombytes_random() % max) + 1;
+	if(r < 0) r *= -1;
 
 	printf("%ld\n", r);
 
