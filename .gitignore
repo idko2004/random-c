@@ -1,3 +1,4 @@
 libsodium-stable/
 random
 str_vec.o
+seed

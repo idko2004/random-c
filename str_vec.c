@@ -8,6 +8,7 @@ str_vec new_str_vec(){
     str_vec vec;
     vec.len = 0;
     vec.strings_len = 20;
+    vec.vector = NULL;
     return vec;
 }
 
