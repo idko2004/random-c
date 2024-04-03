@@ -1,11 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
-#include <math.h>
-#include <unistd.h>
-//#include <sodium.h>
 #include "str_vec.h"
+#include "seed.h"
 
 void print_help()
 {
@@ -29,23 +26,10 @@ int list_mode(int argc, char *argv[])
 		return 1;
 	}
 
-	//printf("participants.len = %i\n", participants.len);
-	/*
-	for(int i = 0; i < participants.len; i++)
-	{
-		printf("%s\n", vec_get_back(&participants, i));
-	}
-	*/
-	//int r = randombytes_random(); //Obtener el número random.
-	//printf("r = %i\n", r);
+	int r = rand() % participants.len; //Sacar el resto de r con el número de participantes, así siempre está in-bounds.
 
-	int r = rand();
-
-	r = r % participants.len; //Sacar el resto de r con el número de participantes, así siempre está in-bounds.
 	if(r < 0) r *= -1; //Si el número es negativo, hacerlo positivo.
 	
-	//printf("r mod participants.len = %i\n", r);
-
 	char *winner = vec_get_back(&participants, r);
 
 	printf("%s\n", winner);
@@ -82,69 +66,7 @@ int dice_mode(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-	/*
-	if(sodium_init() == -1)
-	{
-		fprintf(stderr, "Failed to load sodium libary\n");
-		return 1;
-	}
-	*/
-
-	FILE *fileptr = fopen("seed", "rb");
-	time_t seed;
-
-	if(fileptr != NULL)
-	{
-		//printf("File opened\n");
-		fread(&seed, sizeof(seed), 1, fileptr);
-		time_t new_seed = time(NULL);
-
-		printf("seed : %ld\n", seed);
-		printf("new one :%ld\n", new_seed);
-
-		if(seed == new_seed)
-		{
-			printf("Same seed\n");
-			seed += seed;
-
-			fclose(fileptr);
-			fileptr = fopen("seed", "wb");
-
-			if(fileptr != NULL)
-			{
-				//printf("wb File opened\n");
-				fwrite(&seed, sizeof(seed), 1, fileptr);
-				//printf("c:\n");
-			}
-		}
-		else
-		{
-			seed = new_seed;
-		}
-	}
-	else
-	{
-		//printf("File not found\n");
-		//fclose(fileptr);
-		//printf("fclosed\n");
-		time(&seed);
-
-		//printf("Opening file as writable\n");
-		fileptr = fopen("seed", "wb");
-
-		if(fileptr != NULL)
-		{
-			//printf("wb File opened\n");
-			fwrite(&seed, sizeof(seed), 1, fileptr);
-			//printf("c:\n");
-		}
-	}
-
-	printf("%ld\n", seed);
-
-	fclose(fileptr);
-
-	srand(seed);
+	generate_seed();
 
 	if(argc < 2)
 	{
