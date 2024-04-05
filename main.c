@@ -56,10 +56,10 @@ int dice_mode(int argc, char *argv[])
 		return 1;
 	}
 
-	int r = (rand() % max) + 1;
+	long int r = (rand() % max) + 1;
 	if(r < 0) r *= -1;
 
-	printf("%i\n", r);
+	printf("%ld\n", r);
 
 	return 0;
 }
