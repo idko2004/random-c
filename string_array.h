@@ -1,18 +1,18 @@
 #ifndef STRING_ARRAY_H  /* Include guard */
 #define STRING_ARRAY_H
 
-typedef struct
+typedef struct 
 {
-    int size_reserved; //Espacio reservado en memoria para el string
+    int size_reserved;
     char * str;
-}String;
+}String; //Permite guardar un string (char *)
 
 typedef struct
 {
     int length;
     int spaces_reserved;
     String * arr_str;
-}String_Arr;
+}String_Arr; //Permite guardar un array de String struct
 
 String str_init(int max_length);
 
