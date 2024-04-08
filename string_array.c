@@ -108,6 +108,7 @@ int strarr_expand(String_Arr * arr, int new_capacity) //Expandir el array de Str
 	}
 
 	int size = new_capacity * sizeof(String);
+	if(PRINT_DEBUG == 1) fprintf(stderr, "-- strarr_expand: new size will be %i\n", size);
 
 	if(realloc(arr->arr_str, size) == NULL)
 	{
@@ -123,14 +124,17 @@ int strarr_push_struct(String_Arr * arr, String * s) //Añadir un String struct 
 {
 	if(arr == NULL || s == NULL)
 	{
-		if(PRINT_DEBUG == 1) fprintf(stderr, "-- strarr_push_string: arr or s are NULL\n");
+		if(PRINT_DEBUG == 1) fprintf(stderr, "-- strarr_push_struct: arr or s are NULL\n");
 		return 1;
 	}
 
 	if((arr->length) >= (arr->spaces_reserved)) //Comprobar si hay espacio
 	{
-		if(PRINT_DEBUG == 1) fprintf(stderr, "-- strarr_push_string is not yet capable of expanding\n");
-		return 1;
+		if(strarr_expand(arr, arr->length + 1) != 0)
+		{
+			if(PRINT_DEBUG == 1) fprintf(stderr, "-- strarr_push_struct: String_Arr did not expand\n");
+			return 1;
+		}
 	}
 
 	arr->arr_str[arr->length] = *s;
@@ -138,29 +142,120 @@ int strarr_push_struct(String_Arr * arr, String * s) //Añadir un String struct 
 	return 0;
 }
 
+int strarr_push_new_struct(String_Arr * arr, int str_length) //Crea un String struct y lo añade al final de String_Arr
+{
+	if(arr == NULL)
+	{
+		if(PRINT_DEBUG == 1) fprintf(stderr, "-- strarr_push_new_struct: arr is NULL\n");
+		return 1;
+	}
+
+	if((arr->length) >= (arr->spaces_reserved)) //Comprobar si hay espacio
+	{
+		if(strarr_expand(arr, arr->length + 1) != 0)
+		{
+			if(PRINT_DEBUG == 1) fprintf(stderr, "-- strarr_push_struct: String_Arr did not expand\n");
+			return 1;
+		}
+	}
+
+	String s = str_init(str_length);
+
+	if(strarr_push_struct(arr, &s) != 0)
+	{
+		if(PRINT_DEBUG == 1) fprintf(stderr, "-- strarr_push_new_struct: Failed to push the String struct down to the String_Arr\n");
+		return 1;
+	}
+
+	return 0;
+}
+
 String strarr_get_struct_at(String_Arr * arr, int index) //Obtener por valor el String struct en el índice dado
 {
+	if(index == -1)
+	{
+		index = arr->length - 1;
+	}
+
 	return arr->arr_str[index];
 }
 
 String * strarr_get_struct_ptr_at(String_Arr * arr, int index) //Obtener el puntero del String struct en el índice dado
 {
+	if(index == -1)
+	{
+		index = arr->length - 1;
+	}
+
 	return &arr->arr_str[index];
 }
 
 char * strarr_get_str_at(String_Arr * arr, int index) //Obtener el string (char *) almacenado en el array en el índice dado
 {
+	if(index == -1)
+	{
+		index = arr->length - 1;
+	}
+
 	return arr->arr_str[index].str;
 }
 
-int strarr_init_str_at(String_Arr * arr, int index, char * text) //Guardar un string (char *) en un String struct, y guardar este String struct en String_Arr
+int strarr_set_str_at(String_Arr * arr, int index, char * text) //Copiar un string (char *) a un String struct almacenado en un String_Array
 {
+	if(arr == NULL || text == NULL)
+	{
+		if(PRINT_DEBUG == 1) fprintf(stderr, "-- strarr_set_str_at: arr or char are NULL\n");
+		return 1;
+	}
 
+	if(index == -1)
+	{
+		index = arr->length - 1;
+	}
+
+	if(index < 0 || index >= (arr->length))
+	{
+		if(PRINT_DEBUG == 1) fprintf(stderr, "-- strarr_set_str_at: index out of bounds (%i out of %i)\n", index, arr->length);
+		return 1;
+	}
+
+	String s = arr->arr_str[index];
+
+	if(str_copy(&s, text) != 0)
+	{
+		if(PRINT_DEBUG == 1) fprintf(stderr, "-- strarr_set_str_at: Failed to copy to %i\n", index);
+		return 1;
+	}
+
+	return 0;
 }
 
+int strarr_push_new_struct_and_set_str(String_Arr * arr, char * text) //Crear un String struct, asignarle texto y ponerlo al final de String_Arr
+{
+	if(arr == NULL || text == NULL)
+	{
+		if(PRINT_DEBUG == 1) fprintf(stderr, "-- strarr_push_new_struct_and_set_str: arr or char are NULL\n");
+		return 1;
+	}
+
+	if(strarr_push_new_struct(arr, strlen(text)) != 0)
+	{
+		if(PRINT_DEBUG == 1) fprintf(stderr, "-- strarr_push_new_struct_and_set_str: Failed to create and push new String struct\n");
+		return 1;
+	}
+
+	if(strarr_set_str_at(arr, -1, text) != 0)
+	{
+		if(PRINT_DEBUG == 1) fprintf(stderr, "-- strarr_push_new_struct_and_set_str: Failed to set text to newly created String struct\n");
+		return 1;
+	}
+
+	return 0;
+}
 
 int main()
 {
+	/*
 	printf("> str_init\n");
 	String s = str_init(7);
 
@@ -180,8 +275,8 @@ int main()
 	printf("> strarr_init\n");
 	String_Arr arr = strarr_init(1);
 
-	printf("> strarr_push_string 1\n");
-	strarr_push_string(&arr, &s);
+	printf("> strarr_push_struct 1\n");
+	strarr_push_struct(&arr, &s);
 
 	printf("> strarr_get_struct_ptr_at \n");
 	String * strptr = strarr_get_struct_ptr_at(&arr, 0);
@@ -200,4 +295,31 @@ int main()
 	printf("> strarr_get_str_at\n");
 	char * asdf1 = strarr_get_str_at(&arr, 0);
 	printf("%s\n", asdf1);
+
+
+	printf("> strarr_push_new_struct 1\n");
+	strarr_push_new_struct(&arr, 25);
+
+	printf("> strarr_push_new_struct 2\n");
+	strarr_push_new_struct(&arr, 25);
+
+	printf("> strarr_push_new_struct 3\n");
+	strarr_push_new_struct(&arr, 25);
+
+	printf("> strarr_push_new_struct_and_set_str\n");
+	strarr_push_new_struct_and_set_str(&arr, "tapa la patata");
+
+	printf("> get text from newly created and pushed String\n");
+	char * asdfgh = strarr_get_str_at(&arr, -1);
+	printf("%s\n", asdfgh);
+	*/
+
+	String_Arr arr = strarr_init(1);
+
+	for(int i = 0; i < 20; i++)
+	{
+		printf("> strarr_push_new_struct_and_set_str %i\n", i);
+		strarr_push_new_struct_and_set_str(&arr, "enemy lasagna robust below wax semiautomatiq aqua accompany slacks why coffee gymnastic motorcycle unibrow existential plastic nightly cow");
+		printf("%i done\n", i);
+	}
 }
