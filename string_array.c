@@ -84,7 +84,7 @@ int str_expand(String * s, int new_length) //Aumenta la capacidad del string (ch
 
 String_Arr strarr_init(int capacity) //Crear un nuevo struct que guarda un array del struct String
 {
-	int size = capacity * sizeof(String);
+	int size = capacity * sizeof(void*);
 
 	String_Arr arr;
 	arr.arr_str = malloc(size);
@@ -107,7 +107,7 @@ int strarr_expand(String_Arr * arr, int new_capacity) //Expandir el array de Str
 		return 1;
 	}
 
-	int size = new_capacity * sizeof(String);
+	int size = new_capacity * sizeof(void*);
 	if(PRINT_DEBUG == 1) fprintf(stderr, "-- strarr_expand: new size will be %i\n", size);
 
 	if(realloc(arr->arr_str, size) == NULL)
@@ -137,7 +137,7 @@ int strarr_push_struct(String_Arr * arr, String * s) //Añadir un String struct 
 		}
 	}
 
-	arr->arr_str[arr->length] = *s;
+	arr->arr_str[arr->length] = s;
 	arr->length++;
 	return 0;
 }
@@ -177,7 +177,7 @@ String strarr_get_struct_at(String_Arr * arr, int index) //Obtener por valor el 
 		index = arr->length - 1;
 	}
 
-	return arr->arr_str[index];
+	return *arr->arr_str[index];
 }
 
 String * strarr_get_struct_ptr_at(String_Arr * arr, int index) //Obtener el puntero del String struct en el índice dado
@@ -187,7 +187,7 @@ String * strarr_get_struct_ptr_at(String_Arr * arr, int index) //Obtener el punt
 		index = arr->length - 1;
 	}
 
-	return &arr->arr_str[index];
+	return arr->arr_str[index];
 }
 
 char * strarr_get_str_at(String_Arr * arr, int index) //Obtener el string (char *) almacenado en el array en el índice dado
@@ -197,7 +197,7 @@ char * strarr_get_str_at(String_Arr * arr, int index) //Obtener el string (char 
 		index = arr->length - 1;
 	}
 
-	return arr->arr_str[index].str;
+	return arr->arr_str[index]->str;
 }
 
 int strarr_set_str_at(String_Arr * arr, int index, char * text) //Copiar un string (char *) a un String struct almacenado en un String_Array
@@ -219,7 +219,7 @@ int strarr_set_str_at(String_Arr * arr, int index, char * text) //Copiar un stri
 		return 1;
 	}
 
-	String s = arr->arr_str[index];
+	String s = *arr->arr_str[index];
 
 	if(str_copy(&s, text) != 0)
 	{
@@ -314,12 +314,33 @@ int main()
 	printf("%s\n", asdfgh);
 	*/
 
-	String_Arr arr = strarr_init(1);
+	//printf("%i", sizeof(void*));
+	//return;
 
-	for(int i = 0; i < 20; i++)
+	String_Arr arr = strarr_init(100);
+
+	for(int i = 0; i < 110; i++)
 	{
-		printf("> strarr_push_new_struct_and_set_str %i\n", i);
-		strarr_push_new_struct_and_set_str(&arr, "enemy lasagna robust below wax semiautomatiq aqua accompany slacks why coffee gymnastic motorcycle unibrow existential plastic nightly cow");
+		
+		String s = str_init(0);
+		//str_copy(&s, "enemy lasagna robust below wax semiautomatic aqua accompany slacks why coffee gymnastic motorcycle unibrow existential plastic nightly cow");
+		strarr_push_struct(&arr, &s);
+
+		for(int j = 0; j < arr.length; j++)
+		{
+			printf("%i: %s\n", j, strarr_get_str_at(&arr, j));
+		}
+
 		printf("%i done\n", i);
+		
+		/*
+		printf("> strarr_push_new_struct_and_set_str %i\n", i);
+		strarr_push_new_struct_and_set_str(&arr, "enemy lasagna robust below wax semiautomatic aqua accompany slacks why coffee gymnastic motorcycle unibrow existential plastic nightly cow");
+		for(int j = 0; j < arr.length; j++)
+		{
+			printf("%i: %s\n", j, strarr_get_str_at(&arr, j));
+		}
+		printf("%i done\n", i);
+		*/
 	}
 }

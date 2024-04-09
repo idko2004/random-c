@@ -11,7 +11,7 @@ typedef struct
 {
     int length;
     int spaces_reserved;
-    String * arr_str;
+    String ** arr_str;
 }String_Arr; //Permite guardar un array de String struct
 
 String str_init(int max_length);
