@@ -69,12 +69,14 @@ int str_expand(String * s, int new_length) //Aumenta la capacidad del string (ch
 		return 1;
 	}
 
-	if(realloc(s->str, size) == NULL)
+	void* new_ptr = realloc(s->str, size);
+
+	if(new_ptr == NULL)
 	{
 		if(PRINT_DEBUG == 1) fprintf(stderr, "-- str_expand: failed to expand\n");
 		return 1;
 	}
-
+	s->str = new_ptr;
 	s->size_reserved = size;
 
 	return 0;
@@ -110,12 +112,15 @@ int strarr_expand(String_Arr * arr, int new_capacity) //Expandir el array de Str
 	int size = new_capacity * sizeof(void*);
 	if(PRINT_DEBUG == 1) fprintf(stderr, "-- strarr_expand: new size will be %i\n", size);
 
-	if(realloc(arr->arr_str, size) == NULL)
+	void* new_ptr = realloc(arr->arr_str, size);
+
+	if(new_ptr == NULL)
 	{
 		if(PRINT_DEBUG == 1) fprintf(stderr, "-- strarr_expand: failed to expand\n");
 		return 1;
 	}
 
+	arr->arr_str = new_ptr;
 	arr->spaces_reserved = new_capacity;
 	return 0;
 }
@@ -317,13 +322,13 @@ int main()
 	//printf("%i", sizeof(void*));
 	//return;
 
-	String_Arr arr = strarr_init(100);
+	String_Arr arr = strarr_init(1);
 
 	for(int i = 0; i < 110; i++)
 	{
-		
-		String s = str_init(0);
-		//str_copy(&s, "enemy lasagna robust below wax semiautomatic aqua accompany slacks why coffee gymnastic motorcycle unibrow existential plastic nightly cow");
+		/*
+		String s = str_init(1);
+		str_copy(&s, "enemy lasagna robust below wax semiautomatic aqua accompany slacks why coffee gymnastic motorcycle unibrow existential plastic nightly cow");
 		strarr_push_struct(&arr, &s);
 
 		for(int j = 0; j < arr.length; j++)
@@ -332,8 +337,8 @@ int main()
 		}
 
 		printf("%i done\n", i);
+		*/
 		
-		/*
 		printf("> strarr_push_new_struct_and_set_str %i\n", i);
 		strarr_push_new_struct_and_set_str(&arr, "enemy lasagna robust below wax semiautomatic aqua accompany slacks why coffee gymnastic motorcycle unibrow existential plastic nightly cow");
 		for(int j = 0; j < arr.length; j++)
@@ -341,6 +346,6 @@ int main()
 			printf("%i: %s\n", j, strarr_get_str_at(&arr, j));
 		}
 		printf("%i done\n", i);
-		*/
+		
 	}
 }
