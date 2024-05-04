@@ -258,6 +258,7 @@ int strarr_push_new_struct_and_set_str(String_Arr * arr, char * text) //Crear un
 	return 0;
 }
 
+
 int main()
 {
 	/*
@@ -317,35 +318,37 @@ int main()
 	printf("> get text from newly created and pushed String\n");
 	char * asdfgh = strarr_get_str_at(&arr, -1);
 	printf("%s\n", asdfgh);
-	*/
 
 	//printf("%i", sizeof(void*));
 	//return;
+*/
 
-	String_Arr arr = strarr_init(1);
+	char * lyrics[] = 
+	{
+        "Twinkle", "twinkle", "little", "star",
+        "How", "I", "wonder", "what", "you", "are",
+        "Up", "above", "the", "world", "so", "high",
+        "Like", "a", "diamond", "in", "the", "sky",
+        "Twinkle", "twinkle", "little", "star",
+        "How", "I", "wonder", "what", "you", "are"
+    };
 
+	String_Arr arr2 = strarr_init(111);
+	
 	for(int i = 0; i < 110; i++)
 	{
-		/*
-		String s = str_init(1);
-		str_copy(&s, "enemy lasagna robust below wax semiautomatic aqua accompany slacks why coffee gymnastic motorcycle unibrow existential plastic nightly cow");
-		strarr_push_struct(&arr, &s);
-
-		for(int j = 0; j < arr.length; j++)
-		{
-			printf("%i: %s\n", j, strarr_get_str_at(&arr, j));
-		}
-
-		printf("%i done\n", i);
-		*/
 		
 		printf("> strarr_push_new_struct_and_set_str %i\n", i);
-		strarr_push_new_struct_and_set_str(&arr, "enemy lasagna robust below wax semiautomatic aqua accompany slacks why coffee gymnastic motorcycle unibrow existential plastic nightly cow");
-		for(int j = 0; j < arr.length; j++)
+		strarr_push_new_struct_and_set_str(&arr2, lyrics[i % 31]);
+		for(int j = 0; j < arr2.length; j++)
 		{
-			printf("%i: %s\n", j, strarr_get_str_at(&arr, j));
+			printf("%i: %s\n", j, strarr_get_str_at(&arr2, j));
 		}
+
 		printf("%i done\n", i);
-		
+
 	}
+
+	//printf("%s\n", strarr_get_str_at(&arr, -1));
+
 }
