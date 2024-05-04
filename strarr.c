@@ -50,7 +50,7 @@ int strarr_expand_array(Strarr * strarr, int new_capacity)
 
 	if(new_capacity < 1 || new_capacity < strarr->spaces_reserved)
 	{
-		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_expand_array: this should be used to expand an array and not to shrink an array\n");
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_expand_array: this should be used to expand an array and not to shrink an it\n");
 		return 1;
 	}
 
@@ -75,7 +75,45 @@ int strarr_expand_array(Strarr * strarr, int new_capacity)
 
 int strarr_expand_string(Strarr * strarr, int index, int new_capacity)
 {
+	if(strarr == NULL)
+	{
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_expand_string: strarr is null\n");
+		return 1;
+	}
 
+	if(index < 0 || index > strarr->length)
+	{
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_expand_string: index out of bounds\n");
+		return 1;
+	}
+
+	char * string = strarr->str_arr[index];
+	int current_capacity = strarr->arr_spaces_reserved[index];
+
+	if(string == NULL)
+	{
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_expand_string: string is NULL\n");
+		return 1;
+	}
+
+	if(new_capacity <= current_capacity)
+	{
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_expand_string: this should be used to expand an string and not to shrink it\n");
+		return 1;
+	}
+
+	char * new_string = realloc(string, new_capacity); //La nueva capacidad ya debe incluir el caracter NULL
+
+	if(new_string == NULL)
+	{
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_expand_string: failed to expand string\n");
+		return 1;
+	}
+
+	strarr->str_arr[index] = new_string;
+	strarr->arr_spaces_reserved[index] = new_capacity;
+
+	return 0;
 }
 
 
