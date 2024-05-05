@@ -6,6 +6,16 @@
 
 #define PRINT_DEBUG 1
 
+int calculate_pointer_arr_size(int arr_capacity) //Generalmente usado para calcular el tamaño de str_arr
+{
+	return sizeof(void*) * arr_capacity;
+}
+
+int calculate_int_arr_size(int arr_capacity) //Generalmente usado para calcular el tamaño de arr_spaces_reserved
+{
+	return sizeof(int) * arr_capacity;
+}
+
 int strarr_initialize(Strarr * strarr, int capacity)
 {
 	if(strarr == NULL)
@@ -20,8 +30,8 @@ int strarr_initialize(Strarr * strarr, int capacity)
 		return 1;
 	}
 
-	strarr->str_arr = malloc(sizeof(void*) * capacity);
-	strarr->arr_spaces_reserved = malloc(sizeof(int) * capacity);
+	strarr->str_arr = malloc(calculate_pointer_arr_size(capacity));
+	strarr->arr_spaces_reserved = malloc(calculate_int_arr_size(capacity));
 	if(strarr->str_arr == NULL || strarr->arr_spaces_reserved == NULL)
 	{
 		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_initialize: failed to allocate memory for the array\n");
@@ -50,15 +60,12 @@ int strarr_expand_array(Strarr * strarr, int new_capacity)
 
 	if(new_capacity < 1 || new_capacity < strarr->spaces_reserved)
 	{
-		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_expand_array: this should be used to expand an array and not to shrink an it\n");
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_expand_array: this should be used to expand an array and not to shrink it\n");
 		return 1;
 	}
 
-	int new_str_arr_size = sizeof(void*) * new_capacity; //El calculo de tamaño viene de strarr_initialize
-	int new_arr_spaces_reserved_size = sizeof(int) * new_capacity;
-
-	void * new_str_arr = realloc(strarr->str_arr, new_str_arr_size);
-	void * new_arr_spaces_reserved = realloc(strarr->arr_spaces_reserved, new_arr_spaces_reserved_size);
+	void * new_str_arr = realloc(strarr->str_arr, calculate_pointer_arr_size(new_capacity));
+	void * new_arr_spaces_reserved = realloc(strarr->arr_spaces_reserved, calculate_int_arr_size(new_capacity));
 
 	if(new_str_arr == NULL || new_arr_spaces_reserved == NULL)
 	{
@@ -175,6 +182,63 @@ char * strarr_get(Strarr * strarr, int index)
 	return result;
 }
 
+int strarr_destroy_string(Strarr * strarr, int index)
+{
+	if(strarr == NULL)
+	{
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_destroy_string: strarr is null\n");
+		return 1;
+	}
+
+	if(index < 0 || index >= strarr->length)
+	{
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_destroy_string: index out of bounds\n");
+		return 1;
+	}
+
+	//Delete the string
+	char * string_to_delete = strarr->str_arr[index];
+	free(string_to_delete);
+	
+	//Mark the deleted string as NULL for deleting it from the array later
+	strarr->str_arr[index] = NULL;
+	strarr->arr_spaces_reserved[index] = -1;
+
+	//Create a new array
+	int new_capacity = strarr->length - 1;
+	char ** new_str_arr = malloc(calculate_pointer_arr_size(new_capacity));
+	int * new_arr_spaces_reserved = malloc(calculate_int_arr_size(new_capacity));
+
+	if(new_str_arr == NULL || new_arr_spaces_reserved == NULL)
+	{
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_destroy_string: The string was deleted, but there was a problem reconstructing the array, so now you have a NULL pointer in your strings array, or/and a string of -1 capacity, take care.\n");
+		return 1;
+	}
+
+	//Copy all the char pointers to the new array
+	int new_i = 0;
+	for(int old_i = 0; old_i < strarr->length; old_i++)
+	{
+		if(strarr->str_arr[old_i] == NULL) continue;
+
+		new_str_arr[new_i] = strarr->str_arr[old_i];
+		new_arr_spaces_reserved[new_i] = strarr->arr_spaces_reserved[old_i];
+
+		new_i++;
+	}
+
+	//Free the old array and assign the new one
+	free(strarr->str_arr);
+	free(strarr->arr_spaces_reserved);
+	strarr->str_arr = new_str_arr;
+	strarr->arr_spaces_reserved = new_arr_spaces_reserved;
+
+	strarr->spaces_reserved = new_capacity; //Use the estimated capacity for the capacity value
+	strarr->length = new_i; //Use the actual iterations we used to assign to the array as the length
+
+	return 0;
+}
+
 
 int main()
 {
@@ -204,10 +268,23 @@ int main()
 		}
 	}
 
+	if(PRINT_DEBUG >= 1) fprintf(stderr, "main: destroy every 2\n");
+	for(int i = 0; i < 16; i++)
+	{
+		printf("Destroying number %i\n", i);
+		strarr_destroy_string(&arr, 0);
+	}
+
+	if(PRINT_DEBUG >= 1) fprintf(stderr, "main: print everything again\n");
+	for(int j = 0; j < arr.length; j++)
+	{
+		printf("%i: %s\n", j, strarr_get(&arr, j));
+	}
+
 	if(PRINT_DEBUG >= 1) fprintf(stderr, "main: push\n");
 	strarr_push(&arr, "Enemy lasagna robust below wax");
 
 	if(PRINT_DEBUG >= 1) fprintf(stderr, "main: get\n");
-	printf("%s", strarr_get(&arr, 32));
+	printf("%s", strarr_get(&arr, arr.length - 1));
 	return 0;
 }

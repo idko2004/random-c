@@ -9,7 +9,7 @@ typedef struct
 	int length; //La cantidad de punteros que str_arr tiene actualmente
 } Strarr;
 
-int strarr_initialize(Strarr * strarr, int capacity); //Inicializa Strarr, debe ejecutarse justo después de crear Strarr
+int strarr_initialize(Strarr * strarr, int capacity); //Inicializa Strarr, debe ejecutarse justo después de crear Strarr, capacity debe indicar la cantidad de espacios a reservar, se cuenta de la misma forma que length
 
 int strarr_expand_array(Strarr * strarr, int new_capacity); //Expande el array (str_arr) a la capacidad indicada, la capacidad indicada será el nuevo spaces_reserved
 
@@ -18,5 +18,7 @@ int strarr_expand_string(Strarr * strarr, int index, int new_capacity); //Expand
 int strarr_push(Strarr * strarr, char * str); //Añade un string al final del array
 
 char * strarr_get(Strarr * strarr, int index); //Obtiene el string guardado en el index especificado del array
+
+int strarr_destroy_string(Strarr * strarr, int index); //Destruye el string en el index especificado y reacomoda el array
 
 #endif
