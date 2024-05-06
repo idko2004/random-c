@@ -184,6 +184,40 @@ char * strarr_get(Strarr * strarr, int index)
 	return result;
 }
 
+int strarr_set(Strarr * strarr, int index, char * text)
+{
+	if(strarr == NULL || text == NULL)
+	{
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_set: strarr or text are null\n");
+		return 1;
+	}
+
+	if(index == strarr->length)
+	{
+		//Hacer push, ya que vendría a ser lo mismo
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_set: just pushing... (this is not an error)\n");
+		strarr_push(strarr, text);
+		return 0;
+	}
+
+	if(strarr->str_arr[index] == NULL)
+	{
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_set: there is not an string in that index, for adding strings in empty spaces use strarr_push\n");
+		return 1;
+	}
+
+	int str_length = strlen(text) + 1;
+
+	if(str_length > strarr->arr_spaces_reserved[index]) //Reservar más memoria si el string es más largo que el que está actualmente en ese lugar
+	{
+		strarr_expand_string(strarr, index, str_length);
+	}
+
+	strcpy(strarr->str_arr[index], text);
+
+	return 0;
+}
+
 int strarr_destroy_string(Strarr * strarr, int index)
 {
 	if(strarr == NULL)
@@ -255,6 +289,7 @@ int strarr_destroy_everything(Strarr * strarr)
 		free(strarr->str_arr[i]);
 	}
 
+	free(strarr->arr_spaces_reserved);
 	free(strarr);
 
 	return 0;
@@ -305,7 +340,13 @@ int main()
 	strarr_push(arr, "Enemy lasagna robust below wax");
 
 	if(PRINT_DEBUG >= 1) fprintf(stderr, "main: get\n");
-	printf("%s", strarr_get(arr, arr->length - 1));
+	printf("%s\n", strarr_get(arr, arr->length - 1));
+
+	if(PRINT_DEBUG >= 1) fprintf(stderr, "main: set\n");
+	strarr_set(arr, arr->length - 1, "tapa la patata");
+
+	if(PRINT_DEBUG >= 1) fprintf(stderr, "main: get again\n");
+	printf("%s\n", strarr_get(arr, arr->length - 1));
 
 	if(PRINT_DEBUG >= 1) fprintf(stderr, "main: destroy everything\n");
 	strarr_destroy_everything(arr);
