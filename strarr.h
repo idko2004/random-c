@@ -3,10 +3,10 @@
 
 typedef struct
 {
-	char ** str_arr; //La array donde se guardan los punteros hacia los strings
-	int * arr_spaces_reserved; //La array donde se guarda la memoria reservada para cada string en str_arr
 	int spaces_reserved; //La cantidad de punteros que puede guardar str_arr, se cuenta de la misma forma que length
 	int length; //La cantidad de punteros que str_arr tiene actualmente
+	int * arr_spaces_reserved; //La array donde se guarda la memoria reservada para cada string en str_arr
+	char ** str_arr; //La array donde se guardan los punteros hacia los strings
 } Strarr;
 
 int strarr_initialize(Strarr * strarr, int capacity); //Inicializa Strarr, debe ejecutarse justo después de crear Strarr, capacity debe indicar la cantidad de espacios a reservar, se cuenta de la misma forma que length

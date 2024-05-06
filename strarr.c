@@ -239,6 +239,25 @@ int strarr_destroy_string(Strarr * strarr, int index)
 	return 0;
 }
 
+int strarr_destroy_everything(Strarr * strarr)
+{
+	if(strarr == NULL)
+	{
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_destroy_everything: can't destroy anything if you give me a null pointer :c\n");
+		return 1;
+	}
+
+	//Free the strings
+	for(int i = 0; i < strarr->length; i++)
+	{
+		free(strarr->str_arr[i]);
+	}
+
+	free(strarr);
+
+	return 0;
+}
+
 
 int main()
 {
@@ -267,8 +286,8 @@ int main()
 			printf("%i: %s\n", j, strarr_get(&arr, j));
 		}
 	}
-
-	if(PRINT_DEBUG >= 1) fprintf(stderr, "main: destroy every 2\n");
+/*
+	if(PRINT_DEBUG >= 1) fprintf(stderr, "main: destroy some\n");
 	for(int i = 0; i < 16; i++)
 	{
 		printf("Destroying number %i\n", i);
@@ -280,11 +299,14 @@ int main()
 	{
 		printf("%i: %s\n", j, strarr_get(&arr, j));
 	}
-
+*/
 	if(PRINT_DEBUG >= 1) fprintf(stderr, "main: push\n");
 	strarr_push(&arr, "Enemy lasagna robust below wax");
 
 	if(PRINT_DEBUG >= 1) fprintf(stderr, "main: get\n");
 	printf("%s", strarr_get(&arr, arr.length - 1));
+
+	if(PRINT_DEBUG >= 1) fprintf(stderr, "main: destroy everything\n");
+	strarr_destroy_everything(&arr);
 	return 0;
 }
