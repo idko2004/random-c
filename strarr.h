@@ -9,7 +9,7 @@ typedef struct
 	char ** str_arr; //La array donde se guardan los punteros hacia los strings
 } Strarr;
 
-int strarr_initialize(Strarr * strarr, int capacity); //Inicializa Strarr, debe ejecutarse justo después de crear Strarr, capacity debe indicar la cantidad de espacios a reservar, se cuenta de la misma forma que length
+Strarr * strarr_new(int capacity); //Inicializa Strarr, debe ejecutarse justo después de crear Strarr, capacity debe indicar la cantidad de espacios a reservar, se cuenta de la misma forma que length
 
 int strarr_expand_array(Strarr * strarr, int new_capacity); //Expande el array (str_arr) a la capacidad indicada, la capacidad indicada será el nuevo spaces_reserved
 

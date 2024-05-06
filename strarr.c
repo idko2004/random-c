@@ -16,26 +16,28 @@ int calculate_int_arr_size(int arr_capacity) //Generalmente usado para calcular 
 	return sizeof(int) * arr_capacity;
 }
 
-int strarr_initialize(Strarr * strarr, int capacity)
+Strarr * strarr_new(int capacity)
 {
-	if(strarr == NULL)
-	{
-		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_initialize: strarr is null\n");
-		return 1;
-	}
-
 	if(capacity <= 0)
 	{
-		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_initialize: capacity can't be that low\n");
-		return 1;
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_new: capacity can't be that low\n");
+		return NULL;
+	}
+
+	Strarr * strarr = malloc(sizeof(Strarr));
+
+	if(strarr == NULL)
+	{
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_new: failed to create Strarr\n");
+		return NULL;		
 	}
 
 	strarr->str_arr = malloc(calculate_pointer_arr_size(capacity));
 	strarr->arr_spaces_reserved = malloc(calculate_int_arr_size(capacity));
 	if(strarr->str_arr == NULL || strarr->arr_spaces_reserved == NULL)
 	{
-		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_initialize: failed to allocate memory for the array\n");
-		return 1;
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_new: failed to allocate memory for the array\n");
+		return NULL;
 	}
 
 	for(int i = 0; i < capacity; i++) //Limpiar la array para que no tenga ram sucia
@@ -47,7 +49,7 @@ int strarr_initialize(Strarr * strarr, int capacity)
 	strarr->spaces_reserved = capacity;
 	strarr->length = 0;
 
-	return 0;
+	return strarr;
 }
 
 int strarr_expand_array(Strarr * strarr, int new_capacity)
@@ -271,42 +273,41 @@ int main()
         "How", "I", "wonder", "what", "you", "are"
     };
 
-	Strarr arr;
-	if(PRINT_DEBUG >= 1) fprintf(stderr, "main: initialize\n");
-	strarr_initialize(&arr, 1);
-
+    if(PRINT_DEBUG >= 1) fprintf(stderr, "main: initialize\n");
+	Strarr * arr = strarr_new(1);
+	
 	if(PRINT_DEBUG >= 1) fprintf(stderr, "main: loop\n");
 	for(int i = 0 ; i < 32; i++)
 	{
 		printf(">>>%i\n", i);
-		strarr_push(&arr, lyrics[i]);
+		strarr_push(arr, lyrics[i]);
 
-		for(int j = 0; j < arr.length; j++)
+		for(int j = 0; j < arr->length; j++)
 		{
-			printf("%i: %s\n", j, strarr_get(&arr, j));
+			printf("%i: %s\n", j, strarr_get(arr, j));
 		}
 	}
-/*
+
 	if(PRINT_DEBUG >= 1) fprintf(stderr, "main: destroy some\n");
 	for(int i = 0; i < 16; i++)
 	{
 		printf("Destroying number %i\n", i);
-		strarr_destroy_string(&arr, 0);
+		strarr_destroy_string(arr, 0);
 	}
 
 	if(PRINT_DEBUG >= 1) fprintf(stderr, "main: print everything again\n");
-	for(int j = 0; j < arr.length; j++)
+	for(int j = 0; j < arr->length; j++)
 	{
-		printf("%i: %s\n", j, strarr_get(&arr, j));
+		printf("%i: %s\n", j, strarr_get(arr, j));
 	}
-*/
+
 	if(PRINT_DEBUG >= 1) fprintf(stderr, "main: push\n");
-	strarr_push(&arr, "Enemy lasagna robust below wax");
+	strarr_push(arr, "Enemy lasagna robust below wax");
 
 	if(PRINT_DEBUG >= 1) fprintf(stderr, "main: get\n");
-	printf("%s", strarr_get(&arr, arr.length - 1));
+	printf("%s", strarr_get(arr, arr->length - 1));
 
 	if(PRINT_DEBUG >= 1) fprintf(stderr, "main: destroy everything\n");
-	strarr_destroy_everything(&arr);
+	strarr_destroy_everything(arr);
 	return 0;
 }
