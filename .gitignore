@@ -1,8 +1,1 @@
-libsodium-stable/
-random
-str_vec.o
-seed.o
-seedfile
-strarr
-string_array
-a
+build/

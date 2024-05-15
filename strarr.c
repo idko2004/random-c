@@ -20,7 +20,7 @@ Strarr * strarr_new(int capacity)
 {
 	if(capacity <= 0)
 	{
-		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_new: capacity can't be that low\n");
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "[ERROR] strarr_new: capacity can't be that low\n");
 		return NULL;
 	}
 
@@ -28,7 +28,7 @@ Strarr * strarr_new(int capacity)
 
 	if(strarr == NULL)
 	{
-		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_new: failed to create Strarr\n");
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "[ERROR] strarr_new: failed to create Strarr\n");
 		return NULL;		
 	}
 
@@ -36,7 +36,7 @@ Strarr * strarr_new(int capacity)
 	strarr->arr_spaces_reserved = malloc(calculate_int_arr_size(capacity));
 	if(strarr->str_arr == NULL || strarr->arr_spaces_reserved == NULL)
 	{
-		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_new: failed to allocate memory for the array\n");
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "[ERROR] strarr_new: failed to allocate memory for the array\n");
 		return NULL;
 	}
 
@@ -56,13 +56,13 @@ int strarr_expand_array(Strarr * strarr, int new_capacity)
 {
 	if(strarr == NULL)
 	{
-		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_expand_array: strarr is null\n");
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "[ERROR] strarr_expand_array: strarr is null\n");
 		return 1;
 	}
 
 	if(new_capacity < 1 || new_capacity < strarr->spaces_reserved)
 	{
-		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_expand_array: this should be used to expand an array and not to shrink it\n");
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "[ERROR] strarr_expand_array: this should be used to expand an array and not to shrink it\n");
 		return 1;
 	}
 
@@ -71,7 +71,7 @@ int strarr_expand_array(Strarr * strarr, int new_capacity)
 
 	if(new_str_arr == NULL || new_arr_spaces_reserved == NULL)
 	{
-		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_expand_array: failed to expand arrays\n");
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "[ERROR] strarr_expand_array: failed to expand arrays\n");
 		return 1;
 	}
 
@@ -86,13 +86,13 @@ int strarr_expand_string(Strarr * strarr, int index, int new_capacity)
 {
 	if(strarr == NULL)
 	{
-		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_expand_string: strarr is null\n");
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "[ERROR] strarr_expand_string: strarr is null\n");
 		return 1;
 	}
 
 	if(index < 0 || index > strarr->length)
 	{
-		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_expand_string: index out of bounds\n");
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "[ERROR] strarr_expand_string: index out of bounds\n");
 		return 1;
 	}
 
@@ -101,13 +101,13 @@ int strarr_expand_string(Strarr * strarr, int index, int new_capacity)
 
 	if(string == NULL)
 	{
-		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_expand_string: string is NULL\n");
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "[ERROR] strarr_expand_string: string is NULL\n");
 		return 1;
 	}
 
 	if(new_capacity <= current_capacity)
 	{
-		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_expand_string: this should be used to expand an string and not to shrink it\n");
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "[ERROR] strarr_expand_string: this should be used to expand an string and not to shrink it\n");
 		return 1;
 	}
 
@@ -115,7 +115,7 @@ int strarr_expand_string(Strarr * strarr, int index, int new_capacity)
 
 	if(new_string == NULL)
 	{
-		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_expand_string: failed to expand string\n");
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "[ERROR] strarr_expand_string: failed to expand string\n");
 		return 1;
 	}
 
@@ -130,7 +130,7 @@ int strarr_push(Strarr * strarr, char * str)
 {
 	if(strarr == NULL || str == NULL)
 	{
-		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_push: strarr or str are null\n");
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "[ERROR] strarr_push: strarr or str are null\n");
 		return 1;
 	}
 
@@ -141,7 +141,7 @@ int strarr_push(Strarr * strarr, char * str)
 		if(strarr_expand_array(strarr, index + 1) == 1)
 		{
 			//Hubo un problema expandiendo el array
-			if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_push: array is too small to add a new string, tried to expand but failed\n");
+			if(PRINT_DEBUG >= 1) fprintf(stderr, "[ERROR] strarr_push: array is too small to add a new string, tried to expand but failed\n");
 			return 1;
 		}
 	}
@@ -151,7 +151,7 @@ int strarr_push(Strarr * strarr, char * str)
 	char * copy = malloc(str_length); //Reservar espacio en memoria para el string
 	if(copy == NULL)
 	{
-		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_push: failed to allocate string\n");
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "[ERROR] strarr_push: failed to allocate string\n");
 		return 1;
 	}
 
@@ -168,18 +168,18 @@ char * strarr_get(Strarr * strarr, int index)
 {
 	if(strarr == NULL)
 	{
-		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_get: strarr is null\n");
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "[ERROR] strarr_get: strarr is null\n");
 		return NULL;
 	}
 
 	if(index < 0 || index >= strarr->length)
 	{
-		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_get: index out of bounds\n");
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "[ERROR] strarr_get: index out of bounds\n");
 		return NULL;
 	}
 
 	char * result = strarr->str_arr[index];
-	if(PRINT_DEBUG >= 1 && result == NULL) fprintf(stderr, "strarr_get: obtained string is null\n");
+	if(PRINT_DEBUG >= 1 && result == NULL) fprintf(stderr, "[WARN] strarr_get: obtained string is null\n");
 
 	return result;
 }
@@ -188,21 +188,21 @@ int strarr_set(Strarr * strarr, int index, char * text)
 {
 	if(strarr == NULL || text == NULL)
 	{
-		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_set: strarr or text are null\n");
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "[INFO] strarr_set: strarr or text are null\n");
 		return 1;
 	}
 
 	if(index == strarr->length)
 	{
 		//Hacer push, ya que vendría a ser lo mismo
-		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_set: just pushing... (this is not an error)\n");
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "[INFO] strarr_set: just pushing...\n");
 		strarr_push(strarr, text);
 		return 0;
 	}
 
 	if(strarr->str_arr[index] == NULL)
 	{
-		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_set: there is not an string in that index, for adding strings in empty spaces use strarr_push\n");
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "[ERROR] strarr_set: there is not an string in that index, for adding strings in empty spaces use strarr_push\n");
 		return 1;
 	}
 
@@ -210,6 +210,7 @@ int strarr_set(Strarr * strarr, int index, char * text)
 
 	if(str_length > strarr->arr_spaces_reserved[index]) //Reservar más memoria si el string es más largo que el que está actualmente en ese lugar
 	{
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "[INFO] strarr_set: expanding string\n");
 		strarr_expand_string(strarr, index, str_length);
 	}
 
@@ -222,13 +223,13 @@ int strarr_destroy_string(Strarr * strarr, int index)
 {
 	if(strarr == NULL)
 	{
-		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_destroy_string: strarr is null\n");
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "[ERROR] strarr_destroy_string: strarr is null\n");
 		return 1;
 	}
 
 	if(index < 0 || index >= strarr->length)
 	{
-		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_destroy_string: index out of bounds\n");
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "[ERROR] strarr_destroy_string: index out of bounds\n");
 		return 1;
 	}
 
@@ -247,7 +248,7 @@ int strarr_destroy_string(Strarr * strarr, int index)
 
 	if(new_str_arr == NULL || new_arr_spaces_reserved == NULL)
 	{
-		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_destroy_string: The string was deleted, but there was a problem reconstructing the array, so now you have a NULL pointer in your strings array, or/and a string of -1 capacity, take care.\n");
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "[ERROR] strarr_destroy_string: The string was deleted, but there was a problem reconstructing the array, so now you have a NULL pointer in your strings array, or/and a string of -1 capacity, take care.\n");
 		return 1;
 	}
 
@@ -279,7 +280,7 @@ int strarr_destroy_everything(Strarr * strarr)
 {
 	if(strarr == NULL)
 	{
-		if(PRINT_DEBUG >= 1) fprintf(stderr, "strarr_destroy_everything: can't destroy anything if you give me a null pointer :c\n");
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "[ERROR] strarr_destroy_everything: can't destroy anything if you give me a null pointer :c\n");
 		return 1;
 	}
 
@@ -295,7 +296,7 @@ int strarr_destroy_everything(Strarr * strarr)
 	return 0;
 }
 
-
+/*
 int main()
 {
 		char * lyrics[] = 
@@ -308,10 +309,10 @@ int main()
         "How", "I", "wonder", "what", "you", "are"
     };
 
-    if(PRINT_DEBUG >= 1) fprintf(stderr, "main: initialize\n");
+    if(PRINT_DEBUG >= 1) fprintf(stderr, "> main: initialize\n");
 	Strarr * arr = strarr_new(1);
 	
-	if(PRINT_DEBUG >= 1) fprintf(stderr, "main: loop\n");
+	if(PRINT_DEBUG >= 1) fprintf(stderr, "> main: loop\n");
 	for(int i = 0 ; i < 32; i++)
 	{
 		printf(">>>%i\n", i);
@@ -323,32 +324,33 @@ int main()
 		}
 	}
 
-	if(PRINT_DEBUG >= 1) fprintf(stderr, "main: destroy some\n");
+	if(PRINT_DEBUG >= 1) fprintf(stderr, "> main: destroy some\n");
 	for(int i = 0; i < 16; i++)
 	{
 		printf("Destroying number %i\n", i);
 		strarr_destroy_string(arr, 0);
 	}
 
-	if(PRINT_DEBUG >= 1) fprintf(stderr, "main: print everything again\n");
+	if(PRINT_DEBUG >= 1) fprintf(stderr, "> main: print everything again\n");
 	for(int j = 0; j < arr->length; j++)
 	{
 		printf("%i: %s\n", j, strarr_get(arr, j));
 	}
 
-	if(PRINT_DEBUG >= 1) fprintf(stderr, "main: push\n");
+	if(PRINT_DEBUG >= 1) fprintf(stderr, "> main: push\n");
 	strarr_push(arr, "Enemy lasagna robust below wax");
 
-	if(PRINT_DEBUG >= 1) fprintf(stderr, "main: get\n");
+	if(PRINT_DEBUG >= 1) fprintf(stderr, "> main: get\n");
 	printf("%s\n", strarr_get(arr, arr->length - 1));
 
-	if(PRINT_DEBUG >= 1) fprintf(stderr, "main: set\n");
+	if(PRINT_DEBUG >= 1) fprintf(stderr, "> main: set\n");
 	strarr_set(arr, arr->length - 1, "tapa la patata");
 
-	if(PRINT_DEBUG >= 1) fprintf(stderr, "main: get again\n");
+	if(PRINT_DEBUG >= 1) fprintf(stderr, "> main: get again\n");
 	printf("%s\n", strarr_get(arr, arr->length - 1));
 
-	if(PRINT_DEBUG >= 1) fprintf(stderr, "main: destroy everything\n");
+	if(PRINT_DEBUG >= 1) fprintf(stderr, "> main: destroy everything\n");
 	strarr_destroy_everything(arr);
 	return 0;
 }
+*/

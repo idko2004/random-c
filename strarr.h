@@ -19,6 +19,10 @@ int strarr_push(Strarr * strarr, char * str); //Añade un string al final del ar
 
 char * strarr_get(Strarr * strarr, int index); //Obtiene el string guardado en el index especificado del array
 
+int strarr_set(Strarr * strarr, int index, char * text); //Reemplaza un string que ha sido guardado en el array anteriormente en el index indicado
+
 int strarr_destroy_string(Strarr * strarr, int index); //Destruye el string en el index especificado y reacomoda el array
+
+int strarr_destroy_everything(Strarr * strarr); //Libera la memoria del struct y de todos los strings que contenía
 
 #endif
