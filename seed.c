@@ -10,7 +10,8 @@
 
 #define PRINT_DEBUG 1
 
-char * seedfile_path = NULL;
+char * seedfile_path = NULL; //archivo que guarda la seed
+char * ifile_path = NULL; //Archivo que guarda las iteraciones que hacer con esa seed
 
 int create_program_directory(char * dir_path)
 {
@@ -33,9 +34,10 @@ int create_program_directory(char * dir_path)
 }
 
 
-void set_seedfile_path(char * path, char * program_folder)
+int set_seedfile_path(char * path, char * program_folder)
 {
-	char * filename = "seed";
+	char * filename_seed = "seed";
+	char * filename_i = "i";
 
 	if(path[strlen(path) - 1] == '/' || path[strlen(path) - 1] == '\\') //Remover el último caracter si es un / para que no haya un // sin querer
 	{
@@ -43,21 +45,34 @@ void set_seedfile_path(char * path, char * program_folder)
 	}
 
 	//Concatenar las dos partes
-	seedfile_path = malloc(strlen(path) + strlen(program_folder) + strlen(filename) + 1);
+	seedfile_path = malloc(strlen(path) + strlen(program_folder) + strlen(filename_seed) + 1);
+	ifile_path = malloc(strlen(path) + strlen(program_folder) + strlen(filename_i) + 1);
+
+	if(seedfile_path == NULL || ifile_path == NULL)
+	{
+		if(PRINT_DEBUG == 1) fprintf(stderr, "-- failed to allocate memory for filepaths\n");
+		return 1;
+	}
 
 	strcpy(seedfile_path, path);
 	strcat(seedfile_path, program_folder);
+
+	strcpy(ifile_path, seedfile_path);
 
 	if(create_program_directory(seedfile_path) != 0) //Antes de añadir el nombre del archivo al seedfile_path, verificar si el directorio existe, así si no existe se puede crear antes de añadirle el nombre del archivo.
 	{
 		if(PRINT_DEBUG == 1) fprintf(stderr, "-- Due to the seedfile being homeless, it will be freed an NULLED\n");
 		free(seedfile_path);
+		free(ifile_path);
 		seedfile_path = NULL;
-		return;
+		ifile_path = NULL;
+		return 1;
 	}
-	strcat(seedfile_path, filename);
 
-	if(PRINT_DEBUG == 1) fprintf(stderr, "-- Seedfile path set to '%s'\n", seedfile_path);
+	strcat(seedfile_path, filename_seed);
+	strcat(ifile_path, filename_i);
+
+	if(PRINT_DEBUG == 1) fprintf(stderr, "-- Seedfile path set to '%s'\n--Iterations file set to '%s'\n", seedfile_path, ifile_path);
 }
 
 void find_seedfile_path()
@@ -88,48 +103,60 @@ void find_seedfile_path()
 
 	if(PRINT_DEBUG == 1) fprintf(stderr, "-- No RANDOM_C_PATH, XDG_DATA_HOME, or HOME env vars found\n");
 	seedfile_path = "seed"; //Así debería crear el archivo en el directorio del proyecto o en pwd, no sé cual
+	ifile_path = "i";
 }
 
-int get_seed(time_t *seed)
+int get_seed(time_t *seed, int * iterations)
 {
-	if(seedfile_path == NULL)
+	if(seedfile_path == NULL || ifile_path == NULL)
 	{
-		if(PRINT_DEBUG == 1) fprintf(stderr, "-- seedfile_path is NULL, so I can't get the seed.\n");
+		if(PRINT_DEBUG == 1) fprintf(stderr, "-- seedfile_path (or ifile_path) is NULL, so I can't get the seed.\n");
 		return 1;
 	}
 
-	FILE *fileptr = fopen(seedfile_path, "rb");
+	FILE *seedfileptr = fopen(seedfile_path, "rb");
+	FILE *ifileptr = fopen(ifile_path, "rb");
 
-	if(fileptr == NULL)
+	if(seedfileptr == NULL || ifileptr == NULL)
 	{
 		if(PRINT_DEBUG == 1) fprintf(stderr, "-- Failed to open seed file as readable, maybe it doesn't exist yet.\n");
 		return 1;
 	}
 
-	fread(seed, sizeof(*seed), 1, fileptr);
-	fclose(fileptr);
+	fread(seed, sizeof(*seed), 1, seedfileptr);
+	fread(iterations, sizeof(*iterations), 1, ifileptr);
+	fclose(seedfileptr);
+	fclose(ifileptr);
 
 	return 0;
 }
 
-int save_seed(time_t *seed)
+int save_seed(time_t *seed, int iterations)
 {
-	if(seedfile_path == NULL)
+	if(seedfile_path == NULL || ifile_path == NULL)
 	{
-		if(PRINT_DEBUG == 1) fprintf(stderr, "-- seedfile_path is NULL, so I can't save the seed.\n");
+		if(PRINT_DEBUG == 1) fprintf(stderr, "-- seedfile_path (or ifile_path) is NULL, so I can't save the seed.\n");
 		return 1;
 	}
 
-	FILE *fileptr = fopen(seedfile_path, "wb");
+	FILE *seedfileptr = fopen(seedfile_path, "wb");
+	FILE *ifileptr = fopen(ifile_path, "wb");
 
-	if(fileptr == NULL)
+	if(seedfileptr == NULL || ifileptr == NULL)
 	{
 		if(PRINT_DEBUG == 1) fprintf(stderr, "-- Failed to open seed file as writable\n");
 		return 1;
 	}
 
-	fwrite(seed, sizeof(*seed), 1, fileptr);
-	fclose(fileptr);
+	fwrite(seed, sizeof(*seed), 1, seedfileptr);
+	fwrite(&iterations, sizeof(iterations), 1, ifileptr);
+	fclose(seedfileptr);
+	fclose(ifileptr);
+
+	free(seedfile_path);
+	free(ifile_path);
+	seedfile_path = NULL;
+	ifile_path = NULL;
 
 	return 0;
 }
@@ -139,12 +166,14 @@ void generate_seed()
 	find_seedfile_path();
 
 	time_t seed;
-	int result = get_seed(&seed);
+	int random_iterations = 0; //Si la seed coincide, generar un número aleatorio nuevo
+
+	int result = get_seed(&seed, &random_iterations);
 
 	if(result == 1) //File does not exist
 	{
 		time(&seed);
-		save_seed(&seed);
+		save_seed(&seed, random_iterations);
 		if(PRINT_DEBUG == 1) fprintf(stderr, "-- Default seed: %ld\n", seed);
 		
 		srand(seed);
@@ -161,16 +190,21 @@ void generate_seed()
 
 	if(seed == new_seed) //Same seed
 	{
-		seed += seed;
-		save_seed(&seed);
-		if(PRINT_DEBUG == 1) fprintf(stderr, "-- Same seed\n-- New seed created: %ld\n", seed);
-		
+		random_iterations++;
+		save_seed(&seed, random_iterations);
+		if(PRINT_DEBUG == 1) fprintf(stderr, "-- Same seed!\n-- Doing random numbers %i times\n", random_iterations);
 		srand(seed);
+
+		for(int i = 0; i <= random_iterations; i++)
+		{
+			rand(); //Usar el random el número de veces que estuviese guardado para que no salga el mismo resultado, no sé que tan cutre sea esto.
+		}
+
 		return;
 	}
 
 	seed = new_seed;
-	save_seed(&seed);
+	save_seed(&seed, 0);
 
 	srand(seed);
 }
