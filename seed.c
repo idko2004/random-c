@@ -54,10 +54,10 @@ int set_seedfile_path(char * path, char * program_folder)
 		return 1;
 	}
 
-	strcpy(seedfile_path, path);
-	strcat(seedfile_path, program_folder);
+	strcpy(seedfile_path, path); // "/home/user/.local/share"
+	strcat(seedfile_path, program_folder); // "/home/user/.local/share/idko2004-random-c/"
 
-	strcpy(ifile_path, seedfile_path);
+	strcpy(ifile_path, seedfile_path); //Tener lo mismo en ambas variables
 
 	if(create_program_directory(seedfile_path) != 0) //Antes de añadir el nombre del archivo al seedfile_path, verificar si el directorio existe, así si no existe se puede crear antes de añadirle el nombre del archivo.
 	{
@@ -69,8 +69,8 @@ int set_seedfile_path(char * path, char * program_folder)
 		return 1;
 	}
 
-	strcat(seedfile_path, filename_seed);
-	strcat(ifile_path, filename_i);
+	strcat(seedfile_path, filename_seed); // "/home/user/.local/share/idko2004-random-c/seed"
+	strcat(ifile_path, filename_i); // "/home/user/.local/share/idko2004-random-c/i"
 
 	if(PRINT_DEBUG == 1) fprintf(stderr, "-- Seedfile path set to '%s'\n--Iterations file set to '%s'\n", seedfile_path, ifile_path);
 }
