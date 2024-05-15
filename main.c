@@ -6,16 +6,15 @@
 
 void print_help()
 {
-	printf("Usage:\n\trandom [PARTICIPANTS]\n\trandom [OPTION]\n\nOptions:\n\t-h, --help\tPrint this screen.\n\t-d, --dice N\tGenerate a random number between 1 and N, by default N is 6.\n");
+	printf("Usage:\n\trandom [PARTICIPANTS]\n\trandom [OPTION]\n\nOptions:\n\t-h, --help\tPrint this screen.\n\t-d, --dice N\tGenerate a random number between 1 and N, by default N is 6.\n\t-p, --pipe\tListen to stdin, use this flag when you want to pipe the result of other programs into random\n");
 }
 
-int list_mode(int argc, char *argv[])
+int list_mode(Strarr * participants)
 {
-	Strarr *  participants = strarr_new(argc);
-
-	for(int i = 1; i < argc; i++) //Usar los argumentos como participantes
+	if(participants == NULL)
 	{
-		strarr_push(participants, argv[i]);
+		fprintf(stderr, "[ERROR] participants is NULL\n");
+		return 1;
 	}
 
 	if(participants->length < 2)
@@ -35,6 +34,27 @@ int list_mode(int argc, char *argv[])
 	printf("%s\n", winner);
 
 	return 0;
+}
+
+int list_mode_from_args(int argc, char ** argv)
+{
+	Strarr * participants = strarr_new(argc);
+
+	for(int i = 1; i < argc; i++) //Usar los argumentos como participantes
+	{
+		strarr_push(participants, argv[i]);
+	}
+
+	int result = list_mode(participants);
+
+	strarr_destroy_everything(participants);
+
+	return result;
+}
+
+int list_mode_from_stdin()
+{
+
 }
 
 int dice_mode(int argc, char *argv[])
@@ -89,13 +109,17 @@ int main(int argc, char *argv[])
 		print_help();
 		return 0;
 	}
-	else if(strcmp(command, "-d") == 0|| strcmp(command, "--dice") == 0)
+	else if(strcmp(command, "-p") == 0 || strcmp(command, "--pipe") == 0)
+	{
+		return list_mode_from_stdin();
+	}
+	else if(strcmp(command, "-d") == 0 || strcmp(command, "--dice") == 0)
 	{
 		return dice_mode(argc, argv);
 	}
 	else
 	{
-		return list_mode(argc, argv);
+		return list_mode_from_args(argc, argv);
 	}
 }
 
