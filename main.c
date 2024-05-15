@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "str_vec.h"
+#include "strarr.h"
 #include "seed.h"
 
 void print_help()
@@ -11,26 +11,26 @@ void print_help()
 
 int list_mode(int argc, char *argv[])
 {
-	str_vec participants = new_str_vec();
+	Strarr *  participants = strarr_new(argc);
 
 	for(int i = 1; i < argc; i++) //Usar los argumentos como participantes
 	{
-		vec_push_back(&participants, argv[i]);
+		strarr_push(participants, argv[i]);
 	}
 
-	if(participants.len < 2)
+	if(participants->length < 2)
 	{
-		if(participants.len == 0) print_help();
+		if(participants->length == 0) print_help();
 		else fprintf(stderr, "Not enough participants\n");
 		
 		return 1;
 	}
 
-	int r = rand() % participants.len; //Sacar el resto de r con el número de participantes, así siempre está in-bounds.
+	int r = rand() % participants->length; //Sacar el resto de r con el número de participantes, así siempre está in-bounds.
 
 	if(r < 0) r *= -1; //Si el número es negativo, hacerlo positivo.
 	
-	char *winner = vec_get_back(&participants, r);
+	char *winner = strarr_get(participants, r);
 
 	printf("%s\n", winner);
 
