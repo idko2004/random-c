@@ -3,6 +3,7 @@
 #include <string.h>
 #include "strarr.h"
 #include "seed.h"
+#include "readstdin.h"
 
 void print_help()
 {
@@ -54,7 +55,7 @@ int list_mode_from_args(int argc, char ** argv)
 
 int list_mode_from_stdin()
 {
-	
+	char * input = read_stdin();
 	return 0;
 }
 
