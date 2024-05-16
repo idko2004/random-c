@@ -5,6 +5,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#define PRINT_DEBUG 1
+
 #define BUFFER_INCREMENTS 10
 #define READ_SIZE 10 //Make sure READ_SIZE is not bigger than BUFFER_INCREMENTS
 
@@ -14,7 +16,7 @@ char * read_stdin()
 	int buffer_available_size = sizeof(char) * BUFFER_INCREMENTS;
 	char * buffer = malloc(buffer_available_size);
 
-	fprintf(stderr, "result:%s, result_size:%d\n", buffer, buffer_available_size);
+	if(PRINT_DEBUG >= 1) fprintf(stderr, "result:%s, result_size:%d\n", buffer, buffer_available_size);
 
 	while(1)
 	{
@@ -25,7 +27,7 @@ char * read_stdin()
 
 			if(buffer == NULL)
 			{
-				fprintf(stderr, "[ERROR] Failed to expand buffer to read stdin.\n");
+				if(PRINT_DEBUG >= 1) fprintf(stderr, "[ERROR] Failed to expand buffer to read stdin.\n");
 				return NULL;
 			}
 		}
@@ -34,7 +36,7 @@ char * read_stdin()
 
 		int read_result = fread(new_read, sizeof(char), READ_SIZE, stdin); //Leer sdtin, leer sizeof(char), READ_SIZE veces, si READ_SIZE es 10, se leen 10 bytes
 
-		fprintf(stderr, "[INFO] Read bytes: %d.\n", read_result);
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "[INFO] Read bytes: %d.\n", read_result);
 
 		memcpy(buffer + buffer_used_size, new_read, sizeof(char) * READ_SIZE); //Copiar lo leído de new_read a buffer, pero con un padding para no sobreescribir lo que ya habíamos leído originalmente, el padding se cuenta en buffer_used_size
 
@@ -44,14 +46,14 @@ char * read_stdin()
 
 		if(feof(stdin))
 		{
-			fprintf(stderr, "[INFO] stdin ended.\n");
+			if(PRINT_DEBUG >= 1) fprintf(stderr, "[INFO] stdin ended.\n");
 			break;
 		}
 	}
 
 	buffer[buffer_used_size] = '\0'; //NULL terminar el buffer para que sea un buen string
 
-	fprintf(stderr, "result:%s\navailable size:%d\nused size:%d\n", buffer, buffer_available_size, buffer_used_size);
+	if(PRINT_DEBUG >= 1) fprintf(stderr, "result:%s\navailable size:%d\nused size:%d\n", buffer, buffer_available_size, buffer_used_size);
 
 	return buffer;
 }

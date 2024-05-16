@@ -1,14 +1,26 @@
-echo "Compiling strarr"
-gcc -c strarr.c -o build/materials/strarr.o
+BUILD="build"
+MATERIALS="${BUILD}/materials"
 
-echo "Compiling seed"
-gcc -c seed.c -o build/materials/seed.o
+YELLOW="\033[1;33m"
+GREEN="\033[1;32m"
+RED="\033[1;31m"
+NOCOLOR="\033[0m"
 
-echo "Compiling main"
-gcc main.c build/materials/strarr.o build/materials/seed.o -o build/random
+echo -e "${YELLOW}Compiling strarr${NOCOLOR}"
+gcc -c strarr.c -o "${MATERIALS}/strarr.o"
+
+echo -e "${YELLOW}Compiling seed${NOCOLOR}"
+gcc -c seed.c -o "${MATERIALS}/seed.o"
+
+echo -e "${YELLOW}Compiling readstdin${NOCOLOR}"
+gcc -c readstdin.c -o "${MATERIALS}/readstdin.o"
+
+echo -e "${YELLOW}Compiling main${NOCOLOR}"
+gcc "${MATERIALS}/strarr.o" "${MATERIALS}/seed.o" "${MATERIALS}/readstdin.o" main.c -o "${BUILD}/random"
 
 if [ $? -eq 0 ]; then
-	echo "Done!"
+	echo -e "${GREEN}Done!${NOCOLOR}"
+	echo "The program should be in ${BUILD}/random"
 else
-	echo "Failed to compile :c"
+	echo -e "${RED}Failed to compile :c${NOCOLOR}"
 fi
