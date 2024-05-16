@@ -1,7 +1,6 @@
 #include "seed.h"
 
 #include <time.h>
-#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -73,6 +72,8 @@ int set_seedfile_path(char * path, char * program_folder)
 	strcat(ifile_path, filename_i); // "/home/user/.local/share/idko2004-random-c/i"
 
 	if(PRINT_DEBUG == 1) fprintf(stderr, "-- Seedfile path set to '%s'\n--Iterations file set to '%s'\n", seedfile_path, ifile_path);
+
+	return 0;
 }
 
 void find_seedfile_path()
