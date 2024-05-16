@@ -54,7 +54,8 @@ int list_mode_from_args(int argc, char ** argv)
 
 int list_mode_from_stdin()
 {
-
+	
+	return 0;
 }
 
 int dice_mode(int argc, char *argv[])
