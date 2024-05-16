@@ -7,7 +7,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#define PRINT_DEBUG 1
+#define PRINT_DEBUG 0
 
 Strarr * split_string(char * input, char splitter)
 {
@@ -33,7 +33,7 @@ Strarr * split_string(char * input, char splitter)
 			}
 			//printf("%s\n", copy);
 
-			start = i;
+			start = i + 1;
 			free(copy);
 		}
 	}

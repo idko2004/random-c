@@ -15,8 +15,11 @@ gcc -c seed.c -o "${MATERIALS}/seed.o"
 echo -e "${YELLOW}Compiling readstdin${NOCOLOR}"
 gcc -c readstdin.c -o "${MATERIALS}/readstdin.o"
 
+echo -e "${YELLOW}Compiling split${NOCOLOR}"
+gcc -c split.c -o "${MATERIALS}/split.o"
+
 echo -e "${YELLOW}Compiling main${NOCOLOR}"
-gcc "${MATERIALS}/strarr.o" "${MATERIALS}/seed.o" "${MATERIALS}/readstdin.o" main.c -o "${BUILD}/random"
+gcc "${MATERIALS}/strarr.o" "${MATERIALS}/seed.o" "${MATERIALS}/readstdin.o" "${MATERIALS}/split.o" main.c -o "${BUILD}/random"
 
 if [ $? -eq 0 ]; then
 	echo -e "${GREEN}Done!${NOCOLOR}"

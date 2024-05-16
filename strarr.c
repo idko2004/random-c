@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define PRINT_DEBUG 1
+#define PRINT_DEBUG 0
 
 int calculate_pointer_arr_size(int arr_capacity) //Generalmente usado para calcular el tamaño de str_arr
 {

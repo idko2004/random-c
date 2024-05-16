@@ -5,7 +5,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#define PRINT_DEBUG 1
+#define PRINT_DEBUG 0
 
 #define BUFFER_INCREMENTS 10
 #define READ_SIZE 10 //Make sure READ_SIZE is not bigger than BUFFER_INCREMENTS

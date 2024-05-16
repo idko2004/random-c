@@ -4,6 +4,7 @@
 #include "strarr.h"
 #include "seed.h"
 #include "readstdin.h"
+#include "split.h"
 
 void print_help()
 {
@@ -56,7 +57,10 @@ int list_mode_from_args(int argc, char ** argv)
 int list_mode_from_stdin()
 {
 	char * input = read_stdin();
-	return 0;
+	Strarr * list = split_string(input, ' ');
+	int result = list_mode(list);
+	strarr_destroy_everything(list);
+	return result;
 }
 
 int dice_mode(int argc, char *argv[])

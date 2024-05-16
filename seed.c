@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
-#define PRINT_DEBUG 1
+#define PRINT_DEBUG 0
 
 char * seedfile_path = NULL; //archivo que guarda la seed
 char * ifile_path = NULL; //Archivo que guarda las iteraciones que hacer con esa seed
