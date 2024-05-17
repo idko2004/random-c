@@ -7,7 +7,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#define PRINT_DEBUG 0
+#define PRINT_DEBUG 1
 
 Strarr * split_string(char * input, char splitter)
 {
@@ -43,6 +43,15 @@ Strarr * split_string(char * input, char splitter)
 	if(arr->length == 0) //Si no se ha encontrado ningún splitter, guardar el input entero en la array
 	{
 		strarr_push(arr, input);
+	}
+
+	//Mostrar los elementos parseados si el debug está puesto
+	if(PRINT_DEBUG >= 1)
+	{
+		for(int i = 0; i < arr->length; i++)
+		{
+			fprintf(stderr, "[INFO] split: arr[%i] = '%s'\n", i, strarr_get(arr, i));
+		}
 	}
 
 	return arr;
