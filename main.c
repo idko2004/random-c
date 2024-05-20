@@ -1,16 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "strarr.h"
 #include "seed.h"
-#include "readstdin.h"
+#include "readstream.h"
 #include "split.h"
 
 #define PRINT_DEBUG 1
 
 void print_help()
 {
-	printf("Usage:\n\trandom [PARTICIPANTS]\n\trandom [OPTION]\n\nOptions:\n\t-h, --help\tPrint this screen.\n\t-d, --dice N\tGenerate a random number between 1 and N, by default N is 6.\n\t-p, --pipe\tListen to stdin, use this flag when you want to pipe the result of other programs into random. You can specify what separator to use to parse the file after this flag, just remember it has to be one char long (but you can specify \"\\n\" for a line break).\n");
+	printf("Usage:\n\trandom [PARTICIPANTS]\n\trandom [OPTION]\n\nOptions:\n\t-h, --help\tPrint this screen.\n\t-d, --dice N\tGenerate a random number between 1 and N, by default N is 6.\n\t-p, --pipe\tListen to stdin, use this flag when you want to pipe the result of other programs into random. You can specify what separator to use to parse the file after this flag, just remember it has to be one char long (but you can specify \"\\n\" for a line break).\n\t-f, --file\tGet the list from the specified file, you can also set the separator in the next argument.\n");
 }
 
 int list_mode(Strarr * participants)
@@ -79,6 +80,41 @@ int list_mode_from_stdin(int argc, char ** argv)
 	return result;
 }
 
+int list_mode_from_file(int argc, char ** argv)
+{
+	if(argc < 3 || argv[2] == NULL)
+	{
+		printf("Please specify a file.\n");
+		return 1;
+	}
+
+	//Determinar que separador usar, o usar espacio por defecto
+	char separator = ' ';
+
+	if(argc > 3 && argv[3] != NULL)
+	{
+		if(strcmp(argv[3], "\\n") == 0) separator = '\n';
+		else separator = argv[3][0];
+
+		if(PRINT_DEBUG >= 1) fprintf(stderr, "-- Separator set to '%c'\n", separator);
+	}
+
+	//Leer el archivo
+	char * file_content = read_file_as_text(argv[2]);
+	if(file_content == NULL)
+	{
+		printf("Failed to read file.\n");
+		return 1;
+	}
+
+	Strarr * list = split_string(file_content, separator);
+	
+	int result = list_mode(list);
+	
+	strarr_destroy_everything(list);
+	return result;
+}
+
 int dice_mode(int argc, char *argv[])
 {
 	long int max = 6;
@@ -134,6 +170,10 @@ int main(int argc, char *argv[])
 	else if(strcmp(command, "-p") == 0 || strcmp(command, "--pipe") == 0)
 	{
 		return list_mode_from_stdin(argc, argv);
+	}
+	else if(strcmp(command, "-f") == 0 || strcmp(command, "--file") == 0)
+	{
+		return list_mode_from_file(argc, argv);
 	}
 	else if(strcmp(command, "-d") == 0 || strcmp(command, "--dice") == 0)
 	{
