@@ -10,7 +10,7 @@
 
 void print_help()
 {
-	printf("Usage:\n\trandom [PARTICIPANTS]\n\trandom [OPTION]\n\nOptions:\n\t-h, --help\tPrint this screen.\n\t-d, --dice N\tGenerate a random number between 1 and N, by default N is 6.\n\t-p, --pipe\tListen to stdin, use this flag when you want to pipe the result of other programs into random. You can specify what separator to use to parse the file after this flag, just remember it has to be one char long (but you can specify \"\\\\n\" for a line break).\n");
+	printf("Usage:\n\trandom [PARTICIPANTS]\n\trandom [OPTION]\n\nOptions:\n\t-h, --help\tPrint this screen.\n\t-d, --dice N\tGenerate a random number between 1 and N, by default N is 6.\n\t-p, --pipe\tListen to stdin, use this flag when you want to pipe the result of other programs into random. You can specify what separator to use to parse the file after this flag, just remember it has to be one char long (but you can specify \"\\n\" for a line break).\n");
 }
 
 int list_mode(Strarr * participants)
