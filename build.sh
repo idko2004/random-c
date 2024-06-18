@@ -6,6 +6,8 @@ GREEN="\033[1;32m"
 RED="\033[1;31m"
 NOCOLOR="\033[0m"
 
+mkdir -p $MATERIALS
+
 echo -e "${YELLOW}Compiling strarr${NOCOLOR}"
 gcc -c strarr.c -o "${MATERIALS}/strarr.o"
 
