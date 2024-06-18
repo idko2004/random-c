@@ -1,3 +1,4 @@
+#!/bin/bash
 BUILD="build"
 MATERIALS="${BUILD}/materials"
 
